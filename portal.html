@@ -139,7 +139,7 @@
         /* Estilos para el desglose */
         .desglose {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
             border-bottom: 2px solid #c3e6cb;
@@ -156,10 +156,11 @@
             color: #004085;
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
+            font-size: 15px;
         }
         .item-desglose p {
             margin: 5px 0;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .gran-total {
@@ -173,6 +174,23 @@
             margin-top: 10px;
             display: block;
         }
+
+        /* Botón de Excel */
+        .btn-excel {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            background-color: #217346; /* Color oficial de Excel */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            display: none; /* Oculto hasta el cierre */
+        }
+        .btn-excel:hover { background-color: #1e6b40; }
+
     </style>
 </head>
 <body>
@@ -183,7 +201,7 @@
     </div>
 
     <div class="contenedor">
-        <h3>Bienvenido al sistema, Fabián</h3>
+        <h3>Bienvenido al sistema</h3>
         
         <div class="caja-tasa">
             <label for="tasaDia"><strong>Tasa de cambio del día (Bs):</strong></label>
@@ -199,6 +217,7 @@
             
             <select id="metodoPago" style="flex: 1;">
                 <option value="Pago Móvil">Pago Móvil</option>
+                <option value="Pago Móvil Jurídico">Pago Móvil Jurídico</option>
                 <option value="Punto de Venta">Punto de Venta</option>
                 <option value="Efectivo ($)">Efectivo ($)</option>
                 <option value="Efectivo (Bs)">Efectivo (Bs)</option>
@@ -230,9 +249,15 @@
             
             <div class="desglose">
                 <div class="item-desglose">
-                    <h4>📱 Pago Móvil</h4>
+                    <h4>📱 P. Móvil</h4>
                     <p>Total $: <strong id="pm-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="pm-bs">0.00</strong></p>
+                </div>
+
+                <div class="item-desglose">
+                    <h4>🏢 P. Móvil Jurídico</h4>
+                    <p>Total $: <strong id="pmj-usd">0.00</strong></p>
+                    <p>Total Bs: <strong id="pmj-bs">0.00</strong></p>
                 </div>
                 
                 <div class="item-desglose">
@@ -258,14 +283,17 @@
                 <div>GRAN TOTAL RECAUDADO: $<span id="montoTotalUSD">0.00</span></div>
                 <div class="total-bs">EQUIVALENTE: Bs <span id="montoTotalBs">0.00</span></div>
             </div>
+
+            <button id="btnExcel" class="btn-excel" onclick="exportarExcel()">📊 Descargar Reporte de Ventas en Excel</button>
             
         </div>
     </div>
 
     <script>
-        // Objetos para guardar los totales separados
+        // Objetos para guardar los totales separados (incluyendo el Jurídico)
         let totalesPorMetodo = {
             "Pago Móvil": 0,
+            "Pago Móvil Jurídico": 0,
             "Punto de Venta": 0,
             "Efectivo ($)": 0,
             "Efectivo (Bs)": 0
@@ -285,9 +313,7 @@
 
             const subtotal = precio * cantidad;
             
-            // Sumamos al total general
             totalAcumuladoUSD += subtotal;
-            // Sumamos al método de pago específico
             totalesPorMetodo[metodoPago] += subtotal;
 
             const contenidoTabla = document.getElementById('contenidoTabla');
@@ -322,19 +348,19 @@
                 return;
             }
 
-            // Calculamos e imprimimos los valores para Pago Móvil
+            // Calculamos e imprimimos los valores para cada método
             document.getElementById('pm-usd').innerText = totalesPorMetodo["Pago Móvil"].toFixed(2);
             document.getElementById('pm-bs').innerText = (totalesPorMetodo["Pago Móvil"] * tasa).toFixed(2);
 
-            // Calculamos e imprimimos los valores para Punto de Venta
+            document.getElementById('pmj-usd').innerText = totalesPorMetodo["Pago Móvil Jurídico"].toFixed(2);
+            document.getElementById('pmj-bs').innerText = (totalesPorMetodo["Pago Móvil Jurídico"] * tasa).toFixed(2);
+
             document.getElementById('pv-usd').innerText = totalesPorMetodo["Punto de Venta"].toFixed(2);
             document.getElementById('pv-bs').innerText = (totalesPorMetodo["Punto de Venta"] * tasa).toFixed(2);
 
-            // Calculamos e imprimimos los valores para Efectivo USD
             document.getElementById('efusd-usd').innerText = totalesPorMetodo["Efectivo ($)"].toFixed(2);
             document.getElementById('efusd-bs').innerText = (totalesPorMetodo["Efectivo ($)"] * tasa).toFixed(2);
 
-            // Calculamos e imprimimos los valores para Efectivo Bs
             document.getElementById('efbs-usd').innerText = totalesPorMetodo["Efectivo (Bs)"].toFixed(2);
             document.getElementById('efbs-bs').innerText = (totalesPorMetodo["Efectivo (Bs)"] * tasa).toFixed(2);
 
@@ -343,8 +369,9 @@
             document.getElementById('montoTotalUSD').innerText = totalAcumuladoUSD.toFixed(2);
             document.getElementById('montoTotalBs').innerText = totalBs.toFixed(2);
             
-            const cajaTotal = document.getElementById('cajaTotal');
-            cajaTotal.style.display = "block";
+            // Mostrar cuadro y botón de Excel
+            document.getElementById('cajaTotal').style.display = "block";
+            document.getElementById('btnExcel').style.display = "block";
         }
 
         function limpiarTodo() {
@@ -355,6 +382,7 @@
                 totalAcumuladoUSD = 0;
                 totalesPorMetodo = {
                     "Pago Móvil": 0,
+                    "Pago Móvil Jurídico": 0,
                     "Punto de Venta": 0,
                     "Efectivo ($)": 0,
                     "Efectivo (Bs)": 0
@@ -362,6 +390,7 @@
                 
                 document.getElementById('contenidoTabla').innerHTML = "";
                 document.getElementById('cajaTotal').style.display = "none";
+                document.getElementById('btnExcel').style.display = "none";
                 
                 document.getElementById('nombreProducto').value = "";
                 document.getElementById('precioProducto').value = "";
@@ -369,7 +398,62 @@
                 document.getElementById('nombreProducto').focus();
             }
         }
+
+        // --- FUNCIÓN PARA DESCARGAR EN EXCEL (.CSV) ---
+        function exportarExcel() {
+            let csv = [];
+            const fechaActual = new Date().toLocaleDateString().replace(/\//g, '-');
+            const tasa = document.getElementById('tasaDia').value;
+
+            // 1. Encabezados de la tabla
+            csv.push("Producto,Precio Unit. ($),Cantidad,Metodo de Pago,Subtotal ($)");
+
+            // 2. Extraer los datos de la tabla HTML
+            const filas = document.querySelectorAll("#contenidoTabla tr");
+            for (let i = 0; i < filas.length; i++) {
+                let filaTabla = [];
+                let columnas = filas[i].querySelectorAll("td");
+                for (let j = 0; j < columnas.length; j++) {
+                    // Quitamos los signos de dólar para que Excel reconozca los números bien
+                    let textoCelda = columnas[j].innerText.replace('$', '');
+                    filaTabla.push('"' + textoCelda + '"'); 
+                }
+                csv.push(filaTabla.join(","));
+            }
+
+            // 3. Añadir el resumen de caja al final del archivo
+            csv.push(""); // Línea en blanco para separar
+            csv.push("RESUMEN DEL CIERRE DE CAJA,,,");
+            csv.push("Fecha:," + fechaActual + ",,,");
+            csv.push("Tasa del dia (Bs):," + tasa + ",,,");
+            csv.push("");
+            
+            csv.push("DESGLOSE POR METODO,Total ($),Total (Bs),,");
+            for (let metodo in totalesPorMetodo) {
+                let montoUSD = totalesPorMetodo[metodo].toFixed(2);
+                let montoBs = (totalesPorMetodo[metodo] * tasa).toFixed(2);
+                csv.push(metodo + "," + montoUSD + "," + montoBs + ",,");
+            }
+            
+            csv.push("");
+            let granTotalBs = (totalAcumuladoUSD * tasa).toFixed(2);
+            csv.push("GRAN TOTAL," + totalAcumuladoUSD.toFixed(2) + "," + granTotalBs + ",,");
+
+            // 4. Crear el archivo y forzar la descarga
+            // Agregamos \ufeff para que Excel lea correctamente los acentos (á, é, í, ó, ú)
+            let archivoCSV = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+            let enlaceDescarga = document.createElement("a");
+            enlaceDescarga.download = "Cierre_Caja_" + fechaActual + ".csv";
+            enlaceDescarga.href = window.URL.createObjectURL(archivoCSV);
+            enlaceDescarga.style.display = "none";
+            document.body.appendChild(enlaceDescarga);
+            enlaceDescarga.click();
+            document.body.removeChild(enlaceDescarga);
+        }
     </script>
+
+</body>
+</html>
 
 </body>
 </html>
