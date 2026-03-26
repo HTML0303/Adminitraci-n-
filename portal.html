@@ -125,7 +125,6 @@
             color: white;
         }
         
-        /* Botones pequeños para editar y eliminar */
         .btn-icono {
             padding: 6px 10px;
             border: none;
@@ -139,7 +138,6 @@
         .btn-eliminar { background-color: #dc3545; color: white; }
         .btn-eliminar:hover { background-color: #c82333; }
         
-        /* Estilos ajustados para el cuadro final de totales */
         .total-box {
             margin-top: 20px;
             padding: 20px;
@@ -213,11 +211,11 @@
     </div>
 
     <div class="contenedor">
-        <h3>TECNOMOZZA</h3>
+        <h3>Bienvenido al sistema</h3>
         
         <div class="caja-tasa">
             <label for="tasaDia"><strong>Tasa de cambio del día (Bs):</strong></label>
-            <input type="number" id="tasaDia" placeholder="Ej: 36.50" step="0.01">
+            <input type="number" id="tasaDia" placeholder="Ej: 36.50" step="0.01" oninput="guardarTasa()">
         </div>
         
         <div class="formulario-venta">
@@ -244,7 +242,8 @@
                     <th>Cant.</th>
                     <th>Método de Pago</th>
                     <th>Subtotal ($)</th>
-                    <th>Acciones</th> </tr>
+                    <th>Acciones</th> 
+                </tr>
             </thead>
             <tbody id="contenidoTabla">
                 </tbody>
@@ -294,10 +293,36 @@
     </div>
 
     <script>
-        // Memoria central para guardar todas las ventas (permite editar y borrar)
         let listaVentas = [];
         let totalesPorMetodo = {};
         let totalAcumuladoUSD = 0;
+
+        // --- CARGAR DATOS AL ABRIR LA PÁGINA ---
+        window.onload = function() {
+            // Cargar tasa guardada
+            const tasaGuardada = localStorage.getItem('tasaDiaGuardada');
+            if (tasaGuardada) {
+                document.getElementById('tasaDia').value = tasaGuardada;
+            }
+
+            // Cargar ventas guardadas
+            const ventasGuardadas = localStorage.getItem('ventasGuardadas');
+            if (ventasGuardadas) {
+                listaVentas = JSON.parse(ventasGuardadas);
+                renderizarTabla();
+            }
+        };
+
+        // --- GUARDAR TASA EN MEMORIA ---
+        function guardarTasa() {
+            const tasa = document.getElementById('tasaDia').value;
+            localStorage.setItem('tasaDiaGuardada', tasa);
+        }
+
+        // --- GUARDAR VENTAS EN MEMORIA ---
+        function guardarVentasEnMemoria() {
+            localStorage.setItem('ventasGuardadas', JSON.stringify(listaVentas));
+        }
 
         function agregarVenta() {
             const nombre = document.getElementById('nombreProducto').value;
@@ -310,7 +335,6 @@
                 return; 
             }
 
-            // Guardamos el producto en nuestra memoria
             listaVentas.push({
                 nombre: nombre,
                 precio: precio,
@@ -319,27 +343,23 @@
                 subtotal: precio * cantidad
             });
 
-            // Limpiamos los campos visuales
             document.getElementById('nombreProducto').value = "";
             document.getElementById('precioProducto').value = "";
             document.getElementById('cantidadProducto').value = "1";
             document.getElementById('nombreProducto').focus(); 
 
-            // Actualizamos la tabla
             renderizarTabla();
         }
 
         function renderizarTabla() {
             const contenidoTabla = document.getElementById('contenidoTabla');
-            contenidoTabla.innerHTML = ""; // Limpiar tabla actual
+            contenidoTabla.innerHTML = ""; 
 
-            // Reiniciamos los totales
             totalAcumuladoUSD = 0;
             totalesPorMetodo = {
                 "Pago Móvil": 0, "Pago Móvil Jurídico": 0, "Punto de Venta": 0, "Efectivo ($)": 0, "Efectivo (Bs)": 0
             };
 
-            // Volvemos a dibujar todas las filas y recalcular totales
             listaVentas.forEach((venta, index) => {
                 totalAcumuladoUSD += venta.subtotal;
                 totalesPorMetodo[venta.metodoPago] += venta.subtotal;
@@ -360,34 +380,34 @@
                 contenidoTabla.innerHTML += fila;
             });
 
-            // Si el cuadro de cierre está abierto, lo actualizamos automáticamente
+            // Guardamos todo en la memoria del navegador cada vez que se dibuja la tabla
+            guardarVentasEnMemoria();
+
             if(document.getElementById('cajaTotal').style.display === "block") {
                 cerrarCaja();
             }
         }
 
-        // --- NUEVA FUNCIÓN PARA EDITAR PRECIO ---
         function editarPrecio(index) {
             let producto = listaVentas[index];
             let nuevoPrecio = prompt(`Ingresa el nuevo precio para "${producto.nombre}":`, producto.precio);
             
-            if (nuevoPrecio !== null) { // Si el usuario no le dio a cancelar
+            if (nuevoPrecio !== null) { 
                 nuevoPrecio = parseFloat(nuevoPrecio);
                 if (!isNaN(nuevoPrecio) && nuevoPrecio > 0) {
                     listaVentas[index].precio = nuevoPrecio;
                     listaVentas[index].subtotal = nuevoPrecio * listaVentas[index].cantidad;
-                    renderizarTabla(); // Recalcula todo
+                    renderizarTabla(); 
                 } else {
                     alert("Precio inválido. Debe ser un número mayor a 0.");
                 }
             }
         }
 
-        // --- NUEVA FUNCIÓN PARA ELIMINAR FILA ---
         function eliminarVenta(index) {
             if (confirm(`¿Estás seguro de eliminar "${listaVentas[index].nombre}" de la lista?`)) {
-                listaVentas.splice(index, 1); // Lo sacamos de la memoria
-                renderizarTabla(); // Recalcula todo
+                listaVentas.splice(index, 1); 
+                renderizarTabla(); 
             }
         }
 
@@ -432,29 +452,24 @@
                 renderizarTabla();
                 document.getElementById('cajaTotal').style.display = "none";
                 document.getElementById('btnExcel').style.display = "none";
+                
+                // Borrar las ventas de la memoria local, pero dejar la tasa del día intacta
+                localStorage.removeItem('ventasGuardadas');
             }
         }
 
-        // --- EXCEL ORDENADO ---
         function exportarExcel() {
             let csv = [];
             const fechaActual = new Date().toLocaleDateString().replace(/\//g, '-');
             const tasa = document.getElementById('tasaDia').value;
-            
-            // Usamos PUNTO Y COMA (;) para que Excel lo organice en columnas automáticamente
             const separador = ";";
 
-            // 1. Encabezados
             csv.push(`Producto${separador}Precio Unit. ($)${separador}Cantidad${separador}Metodo de Pago${separador}Subtotal ($)`);
 
-            // 2. Filas de productos
             listaVentas.forEach(v => {
-                // Remplazamos los puntos por comas en los precios para que Excel los lea como moneda local si es necesario, 
-                // o los dejamos igual. Lo mejor es pasar el texto limpio.
                 csv.push(`${v.nombre}${separador}${v.precio.toFixed(2)}${separador}${v.cantidad}${separador}${v.metodoPago}${separador}${v.subtotal.toFixed(2)}`);
             });
 
-            // 3. Resumen
             csv.push("");
             csv.push(`RESUMEN DEL CIERRE DE CAJA${separador}${separador}${separador}`);
             csv.push(`Fecha:${separador}${fechaActual}${separador}${separador}`);
@@ -472,7 +487,6 @@
             let granTotalBs = (totalAcumuladoUSD * tasa).toFixed(2);
             csv.push(`GRAN TOTAL${separador}${totalAcumuladoUSD.toFixed(2)}${separador}${granTotalBs}${separador}`);
 
-            // 4. Descargar
             let archivoCSV = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
             let enlaceDescarga = document.createElement("a");
             enlaceDescarga.download = `Cierre_Caja_${fechaActual}.csv`;
@@ -485,5 +499,4 @@
     </script>
 
 </body>
-</html>
 </html>
