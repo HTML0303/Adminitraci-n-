@@ -2,24 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal de Ventas</title>
     <style>
+        /* Ajuste global para que los bordes no rompan el diseño en celular */
+        * { box-sizing: border-box; }
+
         body { 
             font-family: Arial, sans-serif; 
             background-color: #f0f2f5; 
             margin: 0; 
-            padding: 20px;
+            padding: 10px; /* Reducido para celular */
         }
         .header {
             background-color: #28a745; 
             color: white;
-            padding: 15px 20px;
+            padding: 15px;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* Permite que se acomode en celular */
+            gap: 10px;
         }
+        .header h2 { margin: 0; font-size: 20px; }
         .header a {
             color: white;
             text-decoration: none;
@@ -27,12 +33,14 @@
             background: #dc3545; 
             padding: 8px 15px;
             border-radius: 4px;
+            text-align: center;
         }
         .header a:hover { background: #c82333; }
+        
         .contenedor {
             background: white;
-            padding: 30px;
-            margin-top: 20px;
+            padding: 20px;
+            margin-top: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
@@ -42,7 +50,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            display: inline-block;
+            display: block; /* Mejor en celular */
             border: 1px solid #d6d8db;
         }
         .caja-tasa input {
@@ -52,10 +60,11 @@
             border-radius: 4px;
             font-weight: bold;
             font-size: 16px;
+            margin-top: 5px;
         }
 
         .formulario-venta {
-            padding: 20px;
+            padding: 15px;
             background-color: #e9ecef;
             border-radius: 8px;
             display: flex;
@@ -64,55 +73,52 @@
             flex-wrap: wrap;
         }
         input[type="text"], input[type="number"], select {
-            padding: 10px;
+            padding: 12px; /* Más grandes para tocar con el dedo */
             border: 1px solid #ccc;
             border-radius: 4px;
+            width: 100%; /* Por defecto ocupa todo el ancho */
         }
         .btn-registrar {
-            padding: 10px 15px;
+            padding: 12px 15px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            width: 100%;
         }
         .btn-registrar:hover { background-color: #0056b3; }
         
         .botones-accion {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap; /* Permite apilarse en celular */
         }
-        .btn-cierre {
-            flex: 2; 
+        .btn-cierre, .btn-limpiar {
             padding: 15px 20px;
-            background-color: #ffc107;
-            color: #333;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
+            width: 100%; /* Ocupan todo el ancho en celular */
         }
+        .btn-cierre { background-color: #ffc107; color: #333; }
         .btn-cierre:hover { background-color: #e0a800; }
-
-        .btn-limpiar {
-            flex: 1; 
-            padding: 15px 20px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-        }
+        .btn-limpiar { background-color: #6c757d; color: white; }
         .btn-limpiar:hover { background-color: #5a6268; }
 
+        /* Contenedor responsivo para la tabla */
+        .tabla-responsiva {
+            width: 100%;
+            overflow-x: auto; /* Agrega scroll horizontal en celulares */
+            margin-top: 20px;
+        }
         table {
             width: 100%;
-            margin-top: 20px;
+            min-width: 600px; /* Evita que la tabla se aplaste */
             border-collapse: collapse;
         }
         th, td {
@@ -120,23 +126,18 @@
             padding: 12px;
             text-align: left;
         }
-        th {
-            background-color: #28a745;
-            color: white;
-        }
+        th { background-color: #28a745; color: white; }
         
         .btn-icono {
-            padding: 6px 10px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             margin-right: 5px;
         }
         .btn-editar { background-color: #17a2b8; color: white; }
-        .btn-editar:hover { background-color: #138496; }
         .btn-eliminar { background-color: #dc3545; color: white; }
-        .btn-eliminar:hover { background-color: #c82333; }
         
         .total-box {
             margin-top: 20px;
@@ -150,8 +151,8 @@
         
         .desglose {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
             margin-bottom: 20px;
             border-bottom: 2px solid #c3e6cb;
             padding-bottom: 20px;
@@ -161,30 +162,13 @@
             padding: 15px;
             border-radius: 6px;
             border: 1px solid #c3e6cb;
-        }
-        .item-desglose h4 {
-            margin: 0 0 10px 0;
-            color: #004085;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            font-size: 15px;
-        }
-        .item-desglose p {
-            margin: 5px 0;
-            font-size: 15px;
-        }
-
-        .gran-total {
             text-align: center;
-            font-size: 20px;
-            font-weight: bold;
         }
-        .total-bs {
-            color: #004085;
-            font-size: 26px;
-            margin-top: 10px;
-            display: block;
-        }
+        .item-desglose h4 { margin: 0 0 10px 0; color: #004085; font-size: 14px; }
+        .item-desglose p { margin: 5px 0; font-size: 14px; }
+
+        .gran-total { text-align: center; font-size: 18px; font-weight: bold; }
+        .total-bs { color: #004085; font-size: 24px; margin-top: 10px; display: block; }
 
         .btn-excel {
             margin-top: 20px;
@@ -201,6 +185,17 @@
         }
         .btn-excel:hover { background-color: #1e6b40; }
 
+        /* MAGIA RESPONSIVA: Si la pantalla es grande (PC), aplicamos esto */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .formulario-venta input[type="text"] { flex: 2; width: auto; }
+            .formulario-venta input[type="number"], .formulario-venta select { flex: 1; width: auto; }
+            .btn-registrar { flex: 1; width: auto; }
+            .botones-accion { flex-wrap: nowrap; }
+            .btn-cierre { flex: 2; }
+            .btn-limpiar { flex: 1; }
+            .caja-tasa { display: inline-block; }
+        }
     </style>
 </head>
 <body>
@@ -219,11 +214,11 @@
         </div>
         
         <div class="formulario-venta">
-            <input type="text" id="nombreProducto" placeholder="Producto" style="flex: 2;">
-            <input type="number" id="precioProducto" placeholder="Precio ($)" step="0.01" style="flex: 1;">
-            <input type="number" id="cantidadProducto" placeholder="Cant." value="1" min="1" style="width: 70px;">
+            <input type="text" id="nombreProducto" placeholder="Producto">
+            <input type="number" id="precioProducto" placeholder="Precio ($)" step="0.01">
+            <input type="number" id="cantidadProducto" placeholder="Cant." value="1" min="1">
             
-            <select id="metodoPago" style="flex: 1;">
+            <select id="metodoPago">
                 <option value="Pago Móvil">Pago Móvil</option>
                 <option value="Pago Móvil Jurídico">Pago Móvil Jurídico</option>
                 <option value="Punto de Venta">Punto de Venta</option>
@@ -231,26 +226,28 @@
                 <option value="Efectivo (Bs)">Efectivo (Bs)</option>
             </select>
 
-            <button class="btn-registrar" onclick="agregarVenta()">+ Agregar</button>
+            <button class="btn-registrar" onclick="agregarVenta()">+ Agregar Venta</button>
         </div>
 
-        <table id="tablaVentas">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Precio Unit. ($)</th>
-                    <th>Cant.</th>
-                    <th>Método de Pago</th>
-                    <th>Subtotal ($)</th>
-                    <th>Acciones</th> 
-                </tr>
-            </thead>
-            <tbody id="contenidoTabla">
-                </tbody>
-        </table>
+        <div class="tabla-responsiva">
+            <table id="tablaVentas">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unit. ($)</th>
+                        <th>Cant.</th>
+                        <th>Método de Pago</th>
+                        <th>Subtotal ($)</th>
+                        <th>Acciones</th> 
+                    </tr>
+                </thead>
+                <tbody id="contenidoTabla">
+                    </tbody>
+            </table>
+        </div>
 
         <div class="botones-accion">
-            <button class="btn-cierre" onclick="cerrarCaja()">Realizar Cierre de Caja (6:00 PM)</button>
+            <button class="btn-cierre" onclick="cerrarCaja()">Realizar Cierre de Caja</button>
             <button class="btn-limpiar" onclick="limpiarTodo()">Limpiar / Nueva Jornada</button>
         </div>
 
@@ -267,7 +264,7 @@
                     <p>Total Bs: <strong id="pmj-bs">0.00</strong></p>
                 </div>
                 <div class="item-desglose">
-                    <h4>💳 Punto de Venta</h4>
+                    <h4>💳 P. de Venta</h4>
                     <p>Total $: <strong id="pv-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="pv-bs">0.00</strong></p>
                 </div>
@@ -288,7 +285,7 @@
                 <div class="total-bs">EQUIVALENTE: Bs <span id="montoTotalBs">0.00</span></div>
             </div>
 
-            <button id="btnExcel" class="btn-excel" onclick="exportarExcel()">📊 Descargar Reporte de Ventas en Excel</button>
+            <button id="btnExcel" class="btn-excel" onclick="exportarExcel()">📊 Descargar Reporte en Excel</button>
         </div>
     </div>
 
@@ -297,15 +294,12 @@
         let totalesPorMetodo = {};
         let totalAcumuladoUSD = 0;
 
-        // --- CARGAR DATOS AL ABRIR LA PÁGINA ---
         window.onload = function() {
-            // Cargar tasa guardada
             const tasaGuardada = localStorage.getItem('tasaDiaGuardada');
             if (tasaGuardada) {
                 document.getElementById('tasaDia').value = tasaGuardada;
             }
 
-            // Cargar ventas guardadas
             const ventasGuardadas = localStorage.getItem('ventasGuardadas');
             if (ventasGuardadas) {
                 listaVentas = JSON.parse(ventasGuardadas);
@@ -313,13 +307,11 @@
             }
         };
 
-        // --- GUARDAR TASA EN MEMORIA ---
         function guardarTasa() {
             const tasa = document.getElementById('tasaDia').value;
             localStorage.setItem('tasaDiaGuardada', tasa);
         }
 
-        // --- GUARDAR VENTAS EN MEMORIA ---
         function guardarVentasEnMemoria() {
             localStorage.setItem('ventasGuardadas', JSON.stringify(listaVentas));
         }
@@ -380,7 +372,6 @@
                 contenidoTabla.innerHTML += fila;
             });
 
-            // Guardamos todo en la memoria del navegador cada vez que se dibuja la tabla
             guardarVentasEnMemoria();
 
             if(document.getElementById('cajaTotal').style.display === "block") {
@@ -453,7 +444,6 @@
                 document.getElementById('cajaTotal').style.display = "none";
                 document.getElementById('btnExcel').style.display = "none";
                 
-                // Borrar las ventas de la memoria local, pero dejar la tasa del día intacta
                 localStorage.removeItem('ventasGuardadas');
             }
         }
