@@ -125,6 +125,20 @@
             color: white;
         }
         
+        /* Botones pequeños para editar y eliminar */
+        .btn-icono {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        .btn-editar { background-color: #17a2b8; color: white; }
+        .btn-editar:hover { background-color: #138496; }
+        .btn-eliminar { background-color: #dc3545; color: white; }
+        .btn-eliminar:hover { background-color: #c82333; }
+        
         /* Estilos ajustados para el cuadro final de totales */
         .total-box {
             margin-top: 20px;
@@ -136,7 +150,6 @@
             display: none; 
         }
         
-        /* Estilos para el desglose */
         .desglose {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -175,19 +188,18 @@
             display: block;
         }
 
-        /* Botón de Excel */
         .btn-excel {
             margin-top: 20px;
             width: 100%;
             padding: 15px;
-            background-color: #217346; /* Color oficial de Excel */
+            background-color: #217346; 
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            display: none; /* Oculto hasta el cierre */
+            display: none; 
         }
         .btn-excel:hover { background-color: #1e6b40; }
 
@@ -208,8 +220,6 @@
             <input type="number" id="tasaDia" placeholder="Ej: 36.50" step="0.01">
         </div>
         
-        <p>Registra las ventas. Selecciona el método de pago y al final del turno calcula el total en Divisas y Bolívares.</p>
-        
         <div class="formulario-venta">
             <input type="text" id="nombreProducto" placeholder="Producto" style="flex: 2;">
             <input type="number" id="precioProducto" placeholder="Precio ($)" step="0.01" style="flex: 1;">
@@ -223,7 +233,7 @@
                 <option value="Efectivo (Bs)">Efectivo (Bs)</option>
             </select>
 
-            <button class="btn-registrar" onclick="registrarVenta()">+ Agregar Venta</button>
+            <button class="btn-registrar" onclick="agregarVenta()">+ Agregar</button>
         </div>
 
         <table id="tablaVentas">
@@ -234,7 +244,7 @@
                     <th>Cant.</th>
                     <th>Método de Pago</th>
                     <th>Subtotal ($)</th>
-                </tr>
+                    <th>Acciones</th> </tr>
             </thead>
             <tbody id="contenidoTabla">
                 </tbody>
@@ -246,32 +256,27 @@
         </div>
 
         <div id="cajaTotal" class="total-box">
-            
             <div class="desglose">
                 <div class="item-desglose">
                     <h4>📱 P. Móvil</h4>
                     <p>Total $: <strong id="pm-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="pm-bs">0.00</strong></p>
                 </div>
-
                 <div class="item-desglose">
-                    <h4>🏢 P. Móvil Jurídico</h4>
+                    <h4>🏢 P. M. Jurídico</h4>
                     <p>Total $: <strong id="pmj-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="pmj-bs">0.00</strong></p>
                 </div>
-                
                 <div class="item-desglose">
                     <h4>💳 Punto de Venta</h4>
                     <p>Total $: <strong id="pv-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="pv-bs">0.00</strong></p>
                 </div>
-                
                 <div class="item-desglose">
                     <h4>💵 Efectivo ($)</h4>
                     <p>Total $: <strong id="efusd-usd">0.00</strong></p>
                     <p>Total Bs: <strong id="efusd-bs">0.00</strong></p>
                 </div>
-                
                 <div class="item-desglose">
                     <h4>🇻🇪 Efectivo (Bs)</h4>
                     <p>Total $: <strong id="efbs-usd">0.00</strong></p>
@@ -285,22 +290,16 @@
             </div>
 
             <button id="btnExcel" class="btn-excel" onclick="exportarExcel()">📊 Descargar Reporte de Ventas en Excel</button>
-            
         </div>
     </div>
 
     <script>
-        // Objetos para guardar los totales separados (incluyendo el Jurídico)
-        let totalesPorMetodo = {
-            "Pago Móvil": 0,
-            "Pago Móvil Jurídico": 0,
-            "Punto de Venta": 0,
-            "Efectivo ($)": 0,
-            "Efectivo (Bs)": 0
-        };
+        // Memoria central para guardar todas las ventas (permite editar y borrar)
+        let listaVentas = [];
+        let totalesPorMetodo = {};
         let totalAcumuladoUSD = 0;
 
-        function registrarVenta() {
+        function agregarVenta() {
             const nombre = document.getElementById('nombreProducto').value;
             const precio = parseFloat(document.getElementById('precioProducto').value);
             const cantidad = parseInt(document.getElementById('cantidadProducto').value);
@@ -311,44 +310,99 @@
                 return; 
             }
 
-            const subtotal = precio * cantidad;
-            
-            totalAcumuladoUSD += subtotal;
-            totalesPorMetodo[metodoPago] += subtotal;
+            // Guardamos el producto en nuestra memoria
+            listaVentas.push({
+                nombre: nombre,
+                precio: precio,
+                cantidad: cantidad,
+                metodoPago: metodoPago,
+                subtotal: precio * cantidad
+            });
 
-            const contenidoTabla = document.getElementById('contenidoTabla');
-            const nuevaFila = `
-                <tr>
-                    <td>${nombre}</td>
-                    <td>$${precio.toFixed(2)}</td>
-                    <td>${cantidad}</td>
-                    <td><strong>${metodoPago}</strong></td>
-                    <td>$${subtotal.toFixed(2)}</td>
-                </tr>
-            `;
-            
-            contenidoTabla.innerHTML += nuevaFila;
-
+            // Limpiamos los campos visuales
             document.getElementById('nombreProducto').value = "";
             document.getElementById('precioProducto').value = "";
             document.getElementById('cantidadProducto').value = "1";
             document.getElementById('nombreProducto').focus(); 
+
+            // Actualizamos la tabla
+            renderizarTabla();
+        }
+
+        function renderizarTabla() {
+            const contenidoTabla = document.getElementById('contenidoTabla');
+            contenidoTabla.innerHTML = ""; // Limpiar tabla actual
+
+            // Reiniciamos los totales
+            totalAcumuladoUSD = 0;
+            totalesPorMetodo = {
+                "Pago Móvil": 0, "Pago Móvil Jurídico": 0, "Punto de Venta": 0, "Efectivo ($)": 0, "Efectivo (Bs)": 0
+            };
+
+            // Volvemos a dibujar todas las filas y recalcular totales
+            listaVentas.forEach((venta, index) => {
+                totalAcumuladoUSD += venta.subtotal;
+                totalesPorMetodo[venta.metodoPago] += venta.subtotal;
+
+                const fila = `
+                    <tr>
+                        <td>${venta.nombre}</td>
+                        <td>$${venta.precio.toFixed(2)}</td>
+                        <td>${venta.cantidad}</td>
+                        <td><strong>${venta.metodoPago}</strong></td>
+                        <td>$${venta.subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn-icono btn-editar" onclick="editarPrecio(${index})" title="Editar Precio">✏️</button>
+                            <button class="btn-icono btn-eliminar" onclick="eliminarVenta(${index})" title="Eliminar Producto">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+                contenidoTabla.innerHTML += fila;
+            });
+
+            // Si el cuadro de cierre está abierto, lo actualizamos automáticamente
+            if(document.getElementById('cajaTotal').style.display === "block") {
+                cerrarCaja();
+            }
+        }
+
+        // --- NUEVA FUNCIÓN PARA EDITAR PRECIO ---
+        function editarPrecio(index) {
+            let producto = listaVentas[index];
+            let nuevoPrecio = prompt(`Ingresa el nuevo precio para "${producto.nombre}":`, producto.precio);
+            
+            if (nuevoPrecio !== null) { // Si el usuario no le dio a cancelar
+                nuevoPrecio = parseFloat(nuevoPrecio);
+                if (!isNaN(nuevoPrecio) && nuevoPrecio > 0) {
+                    listaVentas[index].precio = nuevoPrecio;
+                    listaVentas[index].subtotal = nuevoPrecio * listaVentas[index].cantidad;
+                    renderizarTabla(); // Recalcula todo
+                } else {
+                    alert("Precio inválido. Debe ser un número mayor a 0.");
+                }
+            }
+        }
+
+        // --- NUEVA FUNCIÓN PARA ELIMINAR FILA ---
+        function eliminarVenta(index) {
+            if (confirm(`¿Estás seguro de eliminar "${listaVentas[index].nombre}" de la lista?`)) {
+                listaVentas.splice(index, 1); // Lo sacamos de la memoria
+                renderizarTabla(); // Recalcula todo
+            }
         }
 
         function cerrarCaja() {
-            if(totalAcumuladoUSD === 0) {
+            if(listaVentas.length === 0) {
                 alert("No hay ventas registradas para sumar.");
                 return;
             }
 
             const tasa = parseFloat(document.getElementById('tasaDia').value);
-            
             if(isNaN(tasa) || tasa <= 0) {
                 alert("Por favor, ingresa la tasa de cambio del día arriba para poder calcular los bolívares.");
                 return;
             }
 
-            // Calculamos e imprimimos los valores para cada método
             document.getElementById('pm-usd').innerText = totalesPorMetodo["Pago Móvil"].toFixed(2);
             document.getElementById('pm-bs').innerText = (totalesPorMetodo["Pago Móvil"] * tasa).toFixed(2);
 
@@ -364,86 +418,64 @@
             document.getElementById('efbs-usd').innerText = totalesPorMetodo["Efectivo (Bs)"].toFixed(2);
             document.getElementById('efbs-bs').innerText = (totalesPorMetodo["Efectivo (Bs)"] * tasa).toFixed(2);
 
-            // Gran total general
             const totalBs = totalAcumuladoUSD * tasa;
             document.getElementById('montoTotalUSD').innerText = totalAcumuladoUSD.toFixed(2);
             document.getElementById('montoTotalBs').innerText = totalBs.toFixed(2);
             
-            // Mostrar cuadro y botón de Excel
             document.getElementById('cajaTotal').style.display = "block";
             document.getElementById('btnExcel').style.display = "block";
         }
 
         function limpiarTodo() {
-            const confirmar = confirm("¿Estás seguro de que deseas borrar todas las ventas registradas y empezar de cero?");
-            
-            if (confirmar) {
-                // Reiniciamos todo a cero
-                totalAcumuladoUSD = 0;
-                totalesPorMetodo = {
-                    "Pago Móvil": 0,
-                    "Pago Móvil Jurídico": 0,
-                    "Punto de Venta": 0,
-                    "Efectivo ($)": 0,
-                    "Efectivo (Bs)": 0
-                };
-                
-                document.getElementById('contenidoTabla').innerHTML = "";
+            if (confirm("¿Estás seguro de que deseas borrar todas las ventas registradas y empezar de cero?")) {
+                listaVentas = [];
+                renderizarTabla();
                 document.getElementById('cajaTotal').style.display = "none";
                 document.getElementById('btnExcel').style.display = "none";
-                
-                document.getElementById('nombreProducto').value = "";
-                document.getElementById('precioProducto').value = "";
-                document.getElementById('cantidadProducto').value = "1";
-                document.getElementById('nombreProducto').focus();
             }
         }
 
-        // --- FUNCIÓN PARA DESCARGAR EN EXCEL (.CSV) ---
+        // --- EXCEL ORDENADO ---
         function exportarExcel() {
             let csv = [];
             const fechaActual = new Date().toLocaleDateString().replace(/\//g, '-');
             const tasa = document.getElementById('tasaDia').value;
+            
+            // Usamos PUNTO Y COMA (;) para que Excel lo organice en columnas automáticamente
+            const separador = ";";
 
-            // 1. Encabezados de la tabla
-            csv.push("Producto,Precio Unit. ($),Cantidad,Metodo de Pago,Subtotal ($)");
+            // 1. Encabezados
+            csv.push(`Producto${separador}Precio Unit. ($)${separador}Cantidad${separador}Metodo de Pago${separador}Subtotal ($)`);
 
-            // 2. Extraer los datos de la tabla HTML
-            const filas = document.querySelectorAll("#contenidoTabla tr");
-            for (let i = 0; i < filas.length; i++) {
-                let filaTabla = [];
-                let columnas = filas[i].querySelectorAll("td");
-                for (let j = 0; j < columnas.length; j++) {
-                    // Quitamos los signos de dólar para que Excel reconozca los números bien
-                    let textoCelda = columnas[j].innerText.replace('$', '');
-                    filaTabla.push('"' + textoCelda + '"'); 
-                }
-                csv.push(filaTabla.join(","));
-            }
+            // 2. Filas de productos
+            listaVentas.forEach(v => {
+                // Remplazamos los puntos por comas en los precios para que Excel los lea como moneda local si es necesario, 
+                // o los dejamos igual. Lo mejor es pasar el texto limpio.
+                csv.push(`${v.nombre}${separador}${v.precio.toFixed(2)}${separador}${v.cantidad}${separador}${v.metodoPago}${separador}${v.subtotal.toFixed(2)}`);
+            });
 
-            // 3. Añadir el resumen de caja al final del archivo
-            csv.push(""); // Línea en blanco para separar
-            csv.push("RESUMEN DEL CIERRE DE CAJA,,,");
-            csv.push("Fecha:," + fechaActual + ",,,");
-            csv.push("Tasa del dia (Bs):," + tasa + ",,,");
+            // 3. Resumen
+            csv.push("");
+            csv.push(`RESUMEN DEL CIERRE DE CAJA${separador}${separador}${separador}`);
+            csv.push(`Fecha:${separador}${fechaActual}${separador}${separador}`);
+            csv.push(`Tasa del dia (Bs):${separador}${tasa}${separador}${separador}`);
             csv.push("");
             
-            csv.push("DESGLOSE POR METODO,Total ($),Total (Bs),,");
+            csv.push(`DESGLOSE POR METODO${separador}Total ($)${separador}Total (Bs)${separador}`);
             for (let metodo in totalesPorMetodo) {
                 let montoUSD = totalesPorMetodo[metodo].toFixed(2);
                 let montoBs = (totalesPorMetodo[metodo] * tasa).toFixed(2);
-                csv.push(metodo + "," + montoUSD + "," + montoBs + ",,");
+                csv.push(`${metodo}${separador}${montoUSD}${separador}${montoBs}${separador}`);
             }
             
             csv.push("");
             let granTotalBs = (totalAcumuladoUSD * tasa).toFixed(2);
-            csv.push("GRAN TOTAL," + totalAcumuladoUSD.toFixed(2) + "," + granTotalBs + ",,");
+            csv.push(`GRAN TOTAL${separador}${totalAcumuladoUSD.toFixed(2)}${separador}${granTotalBs}${separador}`);
 
-            // 4. Crear el archivo y forzar la descarga
-            // Agregamos \ufeff para que Excel lea correctamente los acentos (á, é, í, ó, ú)
+            // 4. Descargar
             let archivoCSV = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
             let enlaceDescarga = document.createElement("a");
-            enlaceDescarga.download = "Cierre_Caja_" + fechaActual + ".csv";
+            enlaceDescarga.download = `Cierre_Caja_${fechaActual}.csv`;
             enlaceDescarga.href = window.URL.createObjectURL(archivoCSV);
             enlaceDescarga.style.display = "none";
             document.body.appendChild(enlaceDescarga);
@@ -454,6 +486,4 @@
 
 </body>
 </html>
-
-</body>
 </html>
