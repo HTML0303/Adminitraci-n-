@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Ventas</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f0f2f5; 
+            margin: 0; 
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745; 
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background: #dc3545; 
+            padding: 8px 15px;
+            border-radius: 4px;
+        }
+        .header a:hover { background: #c82333; }
+        .contenedor {
+            background: white;
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .caja-tasa {
+            background-color: #e2e3e5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: inline-block;
+            border: 1px solid #d6d8db;
+        }
+        .caja-tasa input {
+            padding: 8px;
+            width: 100px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .formulario-venta {
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        input[type="text"], input[type="number"], select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn-registrar {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-registrar:hover { background-color: #0056b3; }
+        
+        /* Estilos para los botones de abajo */
+        .botones-accion {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-cierre {
+            flex: 2; /* Ocupa más espacio */
+            padding: 15px 20px;
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .btn-cierre:hover { background-color: #e0a800; }
+
+        .btn-limpiar {
+            flex: 1; /* Ocupa menos espacio */
+            padding: 15px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .btn-limpiar:hover { background-color: #5a6268; }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .total-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            color: #155724;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            display: none; 
+        }
+        .total-bs {
+            color: #004085;
+            font-size: 26px;
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Punto de Venta Local</h2>
+        <a href="mi login.htm">Cerrar Sesión</a>
+    </div>
+
+    <div class="contenedor">
+        <h3>Bienvenido al sistema, Fabián</h3>
+        
+        <div class="caja-tasa">
+            <label for="tasaDia"><strong>Tasa de cambio del día (Bs):</strong></label>
+            <input type="number" id="tasaDia" placeholder="Ej: 36.50" step="0.01">
+        </div>
+        
+        <p>Registra las ventas. Selecciona el método de pago y al final del turno calcula el total en Divisas y Bolívares.</p>
+        
+        <div class="formulario-venta">
+            <input type="text" id="nombreProducto" placeholder="Producto" style="flex: 2;">
+            <input type="number" id="precioProducto" placeholder="Precio ($)" step="0.01" style="flex: 1;">
+            <input type="number" id="cantidadProducto" placeholder="Cant." value="1" min="1" style="width: 70px;">
+            
+            <select id="metodoPago" style="flex: 1;">
+                <option value="Pago Móvil">Pago Móvil</option>
+                <option value="Punto de Venta">Punto de Venta</option>
+                <option value="Efectivo ($)">Efectivo ($)</option>
+                <option value="Efectivo (Bs)">Efectivo (Bs)</option>
+            </select>
+
+            <button class="btn-registrar" onclick="registrarVenta()">+ Agregar Venta</button>
+        </div>
+
+        <table id="tablaVentas">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unit. ($)</th>
+                    <th>Cant.</th>
+                    <th>Método de Pago</th>
+                    <th>Subtotal ($)</th>
+                </tr>
+            </thead>
+            <tbody id="contenidoTabla">
+                </tbody>
+        </table>
+
+        <div class="botones-accion">
+            <button class="btn-cierre" onclick="cerrarCaja()">Realizar Cierre de Caja (6:00 PM)</button>
+            <button class="btn-limpiar" onclick="limpiarTodo()">Limpiar / Nueva Jornada</button>
+        </div>
+
+        <div id="cajaTotal" class="total-box">
+            <div>Total recaudado general: $<span id="montoTotalUSD">0.00</span></div>
+            <div class="total-bs">Total equivalente: Bs <span id="montoTotalBs">0.00</span></div>
+        </div>
+    </div>
+
+    <script>
+        let totalAcumuladoUSD = 0;
+
+        function registrarVenta() {
+            const nombre = document.getElementById('nombreProducto').value;
+            const precio = parseFloat(document.getElementById('precioProducto').value);
+            const cantidad = parseInt(document.getElementById('cantidadProducto').value);
+            const metodoPago = document.getElementById('metodoPago').value;
+            
+            if(nombre.trim() === "" || isNaN(precio) || isNaN(cantidad) || precio <= 0 || cantidad <= 0) {
+                alert("Por favor, ingresa los datos del producto correctamente.");
+                return; 
+            }
+
+            const subtotal = precio * cantidad;
+            totalAcumuladoUSD += subtotal;
+
+            const contenidoTabla = document.getElementById('contenidoTabla');
+            
+            const nuevaFila = `
+                <tr>
+                    <td>${nombre}</td>
+                    <td>$${precio.toFixed(2)}</td>
+                    <td>${cantidad}</td>
+                    <td><strong>${metodoPago}</strong></td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                </tr>
+            `;
+            
+            contenidoTabla.innerHTML += nuevaFila;
+
+            document.getElementById('nombreProducto').value = "";
+            document.getElementById('precioProducto').value = "";
+            document.getElementById('cantidadProducto').value = "1";
+            document.getElementById('nombreProducto').focus(); 
+        }
+
+        function cerrarCaja() {
+            if(totalAcumuladoUSD === 0) {
+                alert("No hay ventas registradas para sumar.");
+                return;
+            }
+
+            const tasa = parseFloat(document.getElementById('tasaDia').value);
+            
+            if(isNaN(tasa) || tasa <= 0) {
+                alert("Por favor, ingresa la tasa de cambio del día arriba para poder calcular los bolívares.");
+                return;
+            }
+
+            const totalBs = totalAcumuladoUSD * tasa;
+
+            document.getElementById('montoTotalUSD').innerText = totalAcumuladoUSD.toFixed(2);
+            document.getElementById('montoTotalBs').innerText = totalBs.toFixed(2);
+            
+            const cajaTotal = document.getElementById('cajaTotal');
+            cajaTotal.style.display = "block";
+        }
+
+        // --- NUEVA FUNCIÓN PARA LIMPIAR TODO ---
+        function limpiarTodo() {
+            // Mostramos una alerta de confirmación para evitar borrados accidentales
+            const confirmar = confirm("¿Estás seguro de que deseas borrar todas las ventas registradas y empezar de cero?");
+            
+            if (confirmar) {
+                // 1. Reiniciamos el acumulador a cero
+                totalAcumuladoUSD = 0;
+                
+                // 2. Vaciamos la tabla de ventas
+                document.getElementById('contenidoTabla').innerHTML = "";
+                
+                // 3. Ocultamos el cuadro verde de totales
+                document.getElementById('cajaTotal').style.display = "none";
+                
+                // 4. Limpiamos los campos de texto
+                document.getElementById('nombreProducto').value = "";
+                document.getElementById('precioProducto').value = "";
+                document.getElementById('cantidadProducto').value = "1";
+                
+                // 5. Dejamos el cursor listo en el campo del producto
+                document.getElementById('nombreProducto').focus();
+            }
+        }
+    </script>
+
+</body>
+</html>
