@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal de Ventas</title>
     <style>
-        /* Ajuste global para que los bordes no rompan el diseño en celular */
         * { box-sizing: border-box; }
 
         body { 
             font-family: Arial, sans-serif; 
             background-color: #f0f2f5; 
             margin: 0; 
-            padding: 10px; /* Reducido para celular */
+            padding: 10px; 
         }
         .header {
             background-color: #28a745; 
@@ -22,7 +21,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Permite que se acomode en celular */
+            flex-wrap: wrap; 
             gap: 10px;
         }
         .header h2 { margin: 0; font-size: 20px; }
@@ -50,7 +49,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            display: block; /* Mejor en celular */
+            display: block; 
             border: 1px solid #d6d8db;
         }
         .caja-tasa input {
@@ -73,10 +72,10 @@
             flex-wrap: wrap;
         }
         input[type="text"], input[type="number"], select {
-            padding: 12px; /* Más grandes para tocar con el dedo */
+            padding: 12px; 
             border: 1px solid #ccc;
             border-radius: 4px;
-            width: 100%; /* Por defecto ocupa todo el ancho */
+            width: 100%; 
         }
         .btn-registrar {
             padding: 12px 15px;
@@ -94,7 +93,7 @@
             display: flex;
             gap: 10px;
             margin-top: 20px;
-            flex-wrap: wrap; /* Permite apilarse en celular */
+            flex-wrap: wrap; 
         }
         .btn-cierre, .btn-limpiar {
             padding: 15px 20px;
@@ -103,22 +102,21 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            width: 100%; /* Ocupan todo el ancho en celular */
+            width: 100%; 
         }
         .btn-cierre { background-color: #ffc107; color: #333; }
         .btn-cierre:hover { background-color: #e0a800; }
         .btn-limpiar { background-color: #6c757d; color: white; }
         .btn-limpiar:hover { background-color: #5a6268; }
 
-        /* Contenedor responsivo para la tabla */
         .tabla-responsiva {
             width: 100%;
-            overflow-x: auto; /* Agrega scroll horizontal en celulares */
+            overflow-x: auto; 
             margin-top: 20px;
         }
         table {
             width: 100%;
-            min-width: 600px; /* Evita que la tabla se aplaste */
+            min-width: 600px; 
             border-collapse: collapse;
         }
         th, td {
@@ -185,7 +183,6 @@
         }
         .btn-excel:hover { background-color: #1e6b40; }
 
-        /* MAGIA RESPONSIVA: Si la pantalla es grande (PC), aplicamos esto */
         @media (min-width: 768px) {
             body { padding: 20px; }
             .formulario-venta input[type="text"] { flex: 2; width: auto; }
@@ -209,8 +206,8 @@
         <h3>Bienvenido al sistema</h3>
         
         <div class="caja-tasa">
-            <label for="tasaDia"><strong>Tasa de cambio del día (Bs):</strong></label>
-            <input type="number" id="tasaDia" placeholder="Ej: 36.50" step="0.01" oninput="guardarTasa()">
+            <label for="tasaDia"><strong>Tasa del día (Bs):</strong></label>
+            <input type="number" id="tasaDia" placeholder="Ej: 36,50" step="0.01" oninput="guardarTasa()">
         </div>
         
         <div class="formulario-venta">
@@ -255,34 +252,34 @@
             <div class="desglose">
                 <div class="item-desglose">
                     <h4>📱 P. Móvil</h4>
-                    <p>Total $: <strong id="pm-usd">0.00</strong></p>
-                    <p>Total Bs: <strong id="pm-bs">0.00</strong></p>
+                    <p>Total $: <strong id="pm-usd">0,00</strong></p>
+                    <p>Total Bs: <strong id="pm-bs">0,00</strong></p>
                 </div>
                 <div class="item-desglose">
                     <h4>🏢 P. M. Jurídico</h4>
-                    <p>Total $: <strong id="pmj-usd">0.00</strong></p>
-                    <p>Total Bs: <strong id="pmj-bs">0.00</strong></p>
+                    <p>Total $: <strong id="pmj-usd">0,00</strong></p>
+                    <p>Total Bs: <strong id="pmj-bs">0,00</strong></p>
                 </div>
                 <div class="item-desglose">
                     <h4>💳 P. de Venta</h4>
-                    <p>Total $: <strong id="pv-usd">0.00</strong></p>
-                    <p>Total Bs: <strong id="pv-bs">0.00</strong></p>
+                    <p>Total $: <strong id="pv-usd">0,00</strong></p>
+                    <p>Total Bs: <strong id="pv-bs">0,00</strong></p>
                 </div>
                 <div class="item-desglose">
                     <h4>💵 Efectivo ($)</h4>
-                    <p>Total $: <strong id="efusd-usd">0.00</strong></p>
-                    <p>Total Bs: <strong id="efusd-bs">0.00</strong></p>
+                    <p>Total $: <strong id="efusd-usd">0,00</strong></p>
+                    <p>Total Bs: <strong id="efusd-bs">0,00</strong></p>
                 </div>
                 <div class="item-desglose">
                     <h4>🇻🇪 Efectivo (Bs)</h4>
-                    <p>Total $: <strong id="efbs-usd">0.00</strong></p>
-                    <p>Total Bs: <strong id="efbs-bs">0.00</strong></p>
+                    <p>Total $: <strong id="efbs-usd">0,00</strong></p>
+                    <p>Total Bs: <strong id="efbs-bs">0,00</strong></p>
                 </div>
             </div>
 
             <div class="gran-total">
-                <div>GRAN TOTAL RECAUDADO: $<span id="montoTotalUSD">0.00</span></div>
-                <div class="total-bs">EQUIVALENTE: Bs <span id="montoTotalBs">0.00</span></div>
+                <div>GRAN TOTAL RECAUDADO: $<span id="montoTotalUSD">0,00</span></div>
+                <div class="total-bs">EQUIVALENTE: Bs <span id="montoTotalBs">0,00</span></div>
             </div>
 
             <button id="btnExcel" class="btn-excel" onclick="exportarExcel()">📊 Descargar Reporte en Excel</button>
@@ -293,6 +290,11 @@
         let listaVentas = [];
         let totalesPorMetodo = {};
         let totalAcumuladoUSD = 0;
+
+        // --- FUNCIÓN PARA FORMATO VENEZOLANO (1.000,50) ---
+        const formatoVE = (num) => {
+            return new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+        };
 
         window.onload = function() {
             const tasaGuardada = localStorage.getItem('tasaDiaGuardada');
@@ -359,10 +361,10 @@
                 const fila = `
                     <tr>
                         <td>${venta.nombre}</td>
-                        <td>$${venta.precio.toFixed(2)}</td>
+                        <td>$${formatoVE(venta.precio)}</td>
                         <td>${venta.cantidad}</td>
                         <td><strong>${venta.metodoPago}</strong></td>
-                        <td>$${venta.subtotal.toFixed(2)}</td>
+                        <td>$${formatoVE(venta.subtotal)}</td>
                         <td>
                             <button class="btn-icono btn-editar" onclick="editarPrecio(${index})" title="Editar Precio">✏️</button>
                             <button class="btn-icono btn-eliminar" onclick="eliminarVenta(${index})" title="Eliminar Producto">🗑️</button>
@@ -381,10 +383,13 @@
 
         function editarPrecio(index) {
             let producto = listaVentas[index];
+            // Mostramos el precio actual con punto, pero si el usuario escribe con coma, lo arreglamos
             let nuevoPrecio = prompt(`Ingresa el nuevo precio para "${producto.nombre}":`, producto.precio);
             
             if (nuevoPrecio !== null) { 
-                nuevoPrecio = parseFloat(nuevoPrecio);
+                // Cambiamos la coma por punto para que el navegador lo pueda calcular
+                nuevoPrecio = parseFloat(nuevoPrecio.replace(',', '.'));
+                
                 if (!isNaN(nuevoPrecio) && nuevoPrecio > 0) {
                     listaVentas[index].precio = nuevoPrecio;
                     listaVentas[index].subtotal = nuevoPrecio * listaVentas[index].cantidad;
@@ -414,24 +419,25 @@
                 return;
             }
 
-            document.getElementById('pm-usd').innerText = totalesPorMetodo["Pago Móvil"].toFixed(2);
-            document.getElementById('pm-bs').innerText = (totalesPorMetodo["Pago Móvil"] * tasa).toFixed(2);
+            // Aplicamos el formato venezolano a cada cuadrito
+            document.getElementById('pm-usd').innerText = formatoVE(totalesPorMetodo["Pago Móvil"]);
+            document.getElementById('pm-bs').innerText = formatoVE(totalesPorMetodo["Pago Móvil"] * tasa);
 
-            document.getElementById('pmj-usd').innerText = totalesPorMetodo["Pago Móvil Jurídico"].toFixed(2);
-            document.getElementById('pmj-bs').innerText = (totalesPorMetodo["Pago Móvil Jurídico"] * tasa).toFixed(2);
+            document.getElementById('pmj-usd').innerText = formatoVE(totalesPorMetodo["Pago Móvil Jurídico"]);
+            document.getElementById('pmj-bs').innerText = formatoVE(totalesPorMetodo["Pago Móvil Jurídico"] * tasa);
 
-            document.getElementById('pv-usd').innerText = totalesPorMetodo["Punto de Venta"].toFixed(2);
-            document.getElementById('pv-bs').innerText = (totalesPorMetodo["Punto de Venta"] * tasa).toFixed(2);
+            document.getElementById('pv-usd').innerText = formatoVE(totalesPorMetodo["Punto de Venta"]);
+            document.getElementById('pv-bs').innerText = formatoVE(totalesPorMetodo["Punto de Venta"] * tasa);
 
-            document.getElementById('efusd-usd').innerText = totalesPorMetodo["Efectivo ($)"].toFixed(2);
-            document.getElementById('efusd-bs').innerText = (totalesPorMetodo["Efectivo ($)"] * tasa).toFixed(2);
+            document.getElementById('efusd-usd').innerText = formatoVE(totalesPorMetodo["Efectivo ($)"]);
+            document.getElementById('efusd-bs').innerText = formatoVE(totalesPorMetodo["Efectivo ($)"] * tasa);
 
-            document.getElementById('efbs-usd').innerText = totalesPorMetodo["Efectivo (Bs)"].toFixed(2);
-            document.getElementById('efbs-bs').innerText = (totalesPorMetodo["Efectivo (Bs)"] * tasa).toFixed(2);
+            document.getElementById('efbs-usd').innerText = formatoVE(totalesPorMetodo["Efectivo (Bs)"]);
+            document.getElementById('efbs-bs').innerText = formatoVE(totalesPorMetodo["Efectivo (Bs)"] * tasa);
 
             const totalBs = totalAcumuladoUSD * tasa;
-            document.getElementById('montoTotalUSD').innerText = totalAcumuladoUSD.toFixed(2);
-            document.getElementById('montoTotalBs').innerText = totalBs.toFixed(2);
+            document.getElementById('montoTotalUSD').innerText = formatoVE(totalAcumuladoUSD);
+            document.getElementById('montoTotalBs').innerText = formatoVE(totalBs);
             
             document.getElementById('cajaTotal').style.display = "block";
             document.getElementById('btnExcel').style.display = "block";
@@ -451,31 +457,38 @@
         function exportarExcel() {
             let csv = [];
             const fechaActual = new Date().toLocaleDateString().replace(/\//g, '-');
-            const tasa = document.getElementById('tasaDia').value;
+            const tasaFormato = document.getElementById('tasaDia').value.replace('.', ',');
             const separador = ";";
 
             csv.push(`Producto${separador}Precio Unit. ($)${separador}Cantidad${separador}Metodo de Pago${separador}Subtotal ($)`);
 
             listaVentas.forEach(v => {
-                csv.push(`${v.nombre}${separador}${v.precio.toFixed(2)}${separador}${v.cantidad}${separador}${v.metodoPago}${separador}${v.subtotal.toFixed(2)}`);
+                // Exportamos al Excel usando solo la coma para los decimales (para que Excel lo lea como número)
+                let precioExcel = v.precio.toFixed(2).replace('.', ',');
+                let subtotalExcel = v.subtotal.toFixed(2).replace('.', ',');
+                csv.push(`${v.nombre}${separador}${precioExcel}${separador}${v.cantidad}${separador}${v.metodoPago}${separador}${subtotalExcel}`);
             });
 
             csv.push("");
             csv.push(`RESUMEN DEL CIERRE DE CAJA${separador}${separador}${separador}`);
             csv.push(`Fecha:${separador}${fechaActual}${separador}${separador}`);
-            csv.push(`Tasa del dia (Bs):${separador}${tasa}${separador}${separador}`);
+            csv.push(`Tasa del dia (Bs):${separador}${tasaFormato}${separador}${separador}`);
             csv.push("");
             
             csv.push(`DESGLOSE POR METODO${separador}Total ($)${separador}Total (Bs)${separador}`);
+            
+            const tasaOriginal = parseFloat(document.getElementById('tasaDia').value);
+            
             for (let metodo in totalesPorMetodo) {
-                let montoUSD = totalesPorMetodo[metodo].toFixed(2);
-                let montoBs = (totalesPorMetodo[metodo] * tasa).toFixed(2);
+                let montoUSD = totalesPorMetodo[metodo].toFixed(2).replace('.', ',');
+                let montoBs = (totalesPorMetodo[metodo] * tasaOriginal).toFixed(2).replace('.', ',');
                 csv.push(`${metodo}${separador}${montoUSD}${separador}${montoBs}${separador}`);
             }
             
             csv.push("");
-            let granTotalBs = (totalAcumuladoUSD * tasa).toFixed(2);
-            csv.push(`GRAN TOTAL${separador}${totalAcumuladoUSD.toFixed(2)}${separador}${granTotalBs}${separador}`);
+            let granTotalUSD = totalAcumuladoUSD.toFixed(2).replace('.', ',');
+            let granTotalBs = (totalAcumuladoUSD * tasaOriginal).toFixed(2).replace('.', ',');
+            csv.push(`GRAN TOTAL${separador}${granTotalUSD}${separador}${granTotalBs}${separador}`);
 
             let archivoCSV = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
             let enlaceDescarga = document.createElement("a");
